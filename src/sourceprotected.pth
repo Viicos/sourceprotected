@@ -1,0 +1,1 @@
+import sys; exec("try:\n    import sourceprotected\nexcept ImportError:\n    pass\nelse:\n    sourceprotected.register()")
