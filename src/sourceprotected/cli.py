@@ -7,7 +7,7 @@ from typing import Optional
 
 from cryptography.fernet import Fernet
 
-ENCODING_HEADER = "-*- coding: sourceprotected -*-"
+ENCODING_HEADER = "# -*- coding: sourceprotected -*-"
 BEGIN_HEADER = "-----BEGIN SOURCEPROTECTED FILE-----"
 END_HEADER = "-----END SOURCEPROTECTED FILE-----"
 
@@ -21,15 +21,13 @@ class ScriptNamespace(Namespace):
 
 def encrypt_source_file(
     inpath: Path, fernet: Fernet, encryption_time: int, outpath: Optional[Path] = None
-):
+) -> None:
     with open(inpath, "r+b") as infile:
         encrypted = fernet.encrypt_at_time(infile.read(), encryption_time).decode("utf-8")
         # `break_on_hyphens` set to `False` as it can appear in the base64 alphabet
-        encrypted_split = fill(
-            encrypted, width=len(ENCODING_HEADER), break_on_hyphens=False
-        )
+        encrypted_split = fill(encrypted, width=len(BEGIN_HEADER), break_on_hyphens=False)
         encrypted_source = (
-            f"{ENCODING_HEADER}\n\n{BEGIN_HEADER}\n{encrypted_split}\n{END_HEADER}"
+            f"{ENCODING_HEADER}\n\n{BEGIN_HEADER}\n{encrypted_split}\n{END_HEADER}\n"
         )
         if outpath is None:
             infile.seek(0)
@@ -39,7 +37,7 @@ def encrypt_source_file(
                 outfile.write(encrypted_source)
 
 
-def cli():
+def cli() -> None:
     parser = ArgumentParser(description="Encrypt Python files using Fernet encryption")
     parser.add_argument(
         "path",
@@ -93,11 +91,20 @@ def cli():
                     new_root = new_base_root.joinpath(*parts[1:])
                     new_root.mkdir(exist_ok=True)
 
-            for file in [file for file in files if file.endswith(".py")]:
+            for file in [
+                file
+                for file in files
+                if file.endswith(".py") or file.endswith("py.typed")
+            ]:
                 new_path = None
                 if new_root is not None:
                     new_path = Path(new_root, file)
-                encrypt_source_file(Path(root, file), fernet, encryption_time, new_path)
-
+                if file.endswith(".py"):
+                    encrypt_source_file(
+                        Path(root, file), fernet, encryption_time, new_path
+                    )
+                elif new_path is not None:
+                    # We just copy the py.typed marker
+                    new_path.touch()
             if "__pycache__" in dirs:
                 dirs.remove("__pycache__")

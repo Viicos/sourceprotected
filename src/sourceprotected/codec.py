@@ -26,12 +26,12 @@ def decode(input: bytes, errors: str = "strict") -> Tuple[str, int]:
     in_block = False
 
     for line in decoded_lines:
-        if in_block:
-            encrypted += line
         if "BEGIN SOURCEPROTECTED FILE" in line:
             in_block = True
         elif "END SOURCEPROTECTED FILE" in line:
             break
+        elif in_block:
+            encrypted += line
 
     decrypted = Fernet(key).decrypt(encrypted).decode("utf-8")
     if not decrypted.endswith("\n"):

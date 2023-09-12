@@ -55,6 +55,7 @@ select = [
 ]
 line-length = 90
 src = ["src"]
+ignore = ["PLR0912"]
 
 [tool.ruff.isort]
 known-first-party = ["sourceprotected"]
