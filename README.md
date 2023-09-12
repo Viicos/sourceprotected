@@ -28,8 +28,9 @@ Using encryption time: 1694...
 
 With `sourceprotected` installed in your current environment, you can run/import encrypted files/modules as long as the `SOURCEPROTECTED_KEY` environment variable is set:
 
+`encrypted.py`:
+
 ```python
-# encrypted.py:
 # -*- coding: sourceprotected -*-
 
 -----BEGIN SOURCEPROTECTED FILE-----
@@ -39,9 +40,9 @@ pn7YrAj5CSqqPWgxUY_dSk5ELA==
 -----END SOURCEPROTECTED FILE-----
 ```
 
-```python
-# main.py:
+`main.py`:
 
+```python
 import encrypted  # Will decrypt encrypted.py on the fly.
 ```
 
