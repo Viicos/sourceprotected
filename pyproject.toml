@@ -28,6 +28,11 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = "https://github.com/Viicos/sourceprotected"
+Source = "https://github.com/Viicos/sourceprotected"
+Changelog = "https://github.com/Viicos/sourceprotected/blob/main/CHANGELOG.md"
+
 [project.scripts]
 sourceprotected = "sourceprotected.cli:cli"
 
